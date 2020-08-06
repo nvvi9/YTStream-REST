@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.3.72"
     id("com.jfrog.bintray") version "1.8.5"
+    id("org.jetbrains.dokka") version "0.9.17"
     id("com.github.johnrengelman.shadow") version "5.0.0"
     `maven-publish`
 }
@@ -49,6 +50,18 @@ shadowJar.apply {
     archiveClassifier.set("")
 }
 
+val dokkaJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    archiveClassifier.set("javadoc")
+    from(tasks.dokka)
+    dependsOn(tasks.dokka)
+}
+
+val sourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.getByName("main").allSource)
+}
+
 tasks {
     withType<KotlinCompile> {
         kotlinOptions {
@@ -75,6 +88,12 @@ tasks {
             )
         }
     }
+
+    dokka {
+        outputFormat = "html"
+        outputDirectory = "$buildDir/javadoc"
+        moduleName = rootProject.name
+    }
 }
 
 java {
@@ -91,27 +110,28 @@ val bintrayRepository = "YTStream"
 val issueUrl = "https://github.com/nvvi9/YTStream/issues"
 val pageUrl = "https://github.com/nvvi9/YTStream"
 val gitUrl = "https://github.com/nvvi9/YTStream.git"
-val vcsTag = "v0.1.0"
+val githubTag = "v0.1.0"
+
+val bintrayDesc = "Library for extracting YouTube video streaming URLs."
 
 val devId = "nvvi9"
 
 publishing {
-    publications.invoke {
+    publications {
         create<MavenPublication>(bintrayRepository) {
-//            groupId = bintrayArtifactGroupID
+            groupId = bintrayArtifactGroupID
             artifactId = bintrayArtifactId
-//            version = bintrayArtifactVersion
-            artifact(shadowJar)
+            version = bintrayArtifactVersion
+            from(components["java"])
+            artifact(dokkaJar)
+            artifact(sourcesJar)
 
             pom.withXml {
-                asNode().appendNode("dependencies").let { node ->
-                    configurations.compile.get().allDependencies.forEach {
-                        node.appendNode("dependency").apply {
-                            appendNode("groupId", it.group)
-                            appendNode("artifactId", it.name)
-                            appendNode("version", it.version)
-                        }
-                    }
+                asNode().apply {
+                    appendNode("name", rootProject.name)
+                    appendNode("description", bintrayDesc)
+                    appendNode("developers").appendNode("developer").appendNode("id", devId)
+
                 }
             }
         }
@@ -138,14 +158,14 @@ bintray {
         vcsUrl = gitUrl
         websiteUrl = pageUrl
         issueTrackerUrl = issueUrl
-        description = "Library for extracting YouTube video streaming URLs."
+        description = bintrayDesc
         setLabels("youtube", "youtube-dl", "stream", "video", "audio", "jvm", "kotlin")
         setLicenses("Apache-2.0")
 
         version.apply {
             name = bintrayArtifactVersion
             desc = pageUrl
-            vcsTag = vcsTag
+            vcsTag = githubTag
         }
     }
 }
