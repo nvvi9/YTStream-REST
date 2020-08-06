@@ -1,0 +1,9 @@
+.gradle
+/reports
+local.properties
+.idea
+*.iml
+/build/
+/YTStream-REST/build/
+/YTStream/build/
+/YTStream/gradle.properties
