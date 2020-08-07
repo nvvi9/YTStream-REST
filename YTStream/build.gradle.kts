@@ -44,24 +44,6 @@ dependencies {
     testImplementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
 }
 
-val shadowJar: ShadowJar by tasks
-shadowJar.apply {
-    archiveBaseName.set(project.name)
-    archiveClassifier.set("")
-}
-
-val dokkaJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    archiveClassifier.set("javadoc")
-    from(tasks.dokka)
-    dependsOn(tasks.dokka)
-}
-
-val sourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.getByName("main").allSource)
-}
-
 tasks {
     withType<KotlinCompile> {
         kotlinOptions {
@@ -94,6 +76,28 @@ tasks {
         outputDirectory = "$buildDir/javadoc"
         moduleName = rootProject.name
     }
+
+    publishToMavenLocal {
+        dependsOn(build)
+    }
+}
+
+val shadowJar: ShadowJar by tasks
+shadowJar.apply {
+    archiveBaseName.set(project.name)
+    archiveClassifier.set("")
+}
+
+val dokkaJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    archiveClassifier.set("javadoc")
+    from(tasks.dokka)
+    dependsOn(tasks.dokka)
+}
+
+val sourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.getByName("main").allSource)
 }
 
 java {
@@ -130,6 +134,7 @@ publishing {
                 asNode().apply {
                     appendNode("name", rootProject.name)
                     appendNode("description", bintrayDesc)
+                    appendNode("url", pageUrl)
                     appendNode("developers").appendNode("developer").appendNode("id", devId)
 
                 }

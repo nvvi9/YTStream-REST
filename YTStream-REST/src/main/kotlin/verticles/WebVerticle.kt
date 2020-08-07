@@ -18,6 +18,10 @@ class WebVerticle(private val mapper: ObjectMapper) : CoroutineVerticle() {
         route("/*").handler(BodyHandler.create())
         mountSubRouter("/api/v1", this)
 
+        get("/").asyncHandler {
+            it.response().end("YTStream")
+        }
+
         get("/videodetails").asyncHandler {
             vertx.eventBusRequest(VIDEO_DETAILS_ADDRESS, it.request().getParam("id"),
                     { ar: AsyncResult<Message<String>> ->
