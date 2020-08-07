@@ -10,7 +10,7 @@ Where `id` is single or multiple YouTube video IDs separated by a comma or plus 
 `https://stream-yt.herokuapp.com/api/v1/videodata?id=w8KQmps-Sog+1nX0kF2UwDc`
 #### Response
 
-```json
+```
 [ {
     "videoDetails" : {
       "id" : "w8KQmps-Sog",
@@ -76,7 +76,7 @@ Response will contain only video details without streams. In this case processin
 
 `https://stream-yt.herokuapp.com/api/v1/videodetails?id=1nX0kF2UwDc+w8KQmps-Sog`
 #### Response
-```json
+```
 [ {
   "id" : "w8KQmps-Sog",
   "title" : "Muse - Uprising [Official Video]",
