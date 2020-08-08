@@ -9,14 +9,24 @@ internal object JsExecutor {
 
     private val scriptEngineManager = ScriptEngineManager()
     private val scriptEngine = scriptEngineManager.getEngineByName("nashorn")
+    private const val attemptsAmount = 4
 
     suspend fun executeScript(functionName: String, script: String): String {
         return coroutineScope {
             scriptEngine.eval(script)
             val invocable = scriptEngine as Invocable
-            val result = invocable.invokeFunction(functionName) as String?
-                ?: throw JsFunctionException("js decoder function returned null")
-            result
+            var result: String? = null
+
+            run loop@{
+                (1..attemptsAmount).forEach { _ ->
+                    (invocable.invokeFunction(functionName) as String?)?.let {
+                        result = it
+                        return@loop
+                    }
+                }
+            }
+
+            result ?: throw JsFunctionException("js function returned null")
         }
     }
 }
