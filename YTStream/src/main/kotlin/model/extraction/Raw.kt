@@ -10,8 +10,8 @@ import network.RetrofitService
 
 
 internal class Raw(
-    val videoPageSource: String,
-    val videoDetails: VideoDetails
+        val videoPageSource: String,
+        val videoDetails: VideoDetails
 ) {
 
     companion object {
@@ -22,14 +22,18 @@ internal class Raw(
 
         private suspend fun fromId(id: String): Raw {
             return coroutineScope {
-                val videoPageSourceDef = async(Dispatchers.IO) {
-                    RetrofitService.ytApiService.getVideoPage(id).string().replace("\\\"", "\"")
+                val videoPageSource = async(Dispatchers.IO) {
+                    try {
+                        RetrofitService.ytApiService.getVideoPage(id).string().replace("\\\"", "\"")
+                    } catch (t: Throwable) {
+                        null
+                    }
                 }
 
                 val videoDetails = async(Dispatchers.IO) {
                     VideoDetails.fromIdFlow(id).single()
                 }
-                Raw(videoPageSourceDef.await(), videoDetails.await())
+                Raw(videoPageSource.await() ?: throw IllegalArgumentException("null video page"), videoDetails.await())
             }
         }
     }

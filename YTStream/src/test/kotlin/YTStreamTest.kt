@@ -16,10 +16,7 @@ import org.junit.runners.JUnit4
 class YTStreamTest {
 
     private val ytStream = YTStream()
-    private val id = arrayOf(
-        "KK2OXwEke2Y", "K-a8s8OLBSE", "dYk-yCsuTUo", "dPhwbZBvW2o", "BjhW3vBA1QU", "5JHrqeOELvM", "PLutQQzjig4",
-        "7vfnAY4fCbo", "UcLSjQx8GXA", "CblSCoHyEXY", "XATUH8O75qc", "_E7K4Tz9Uq4", "MjYnV92EThs", "3UyImq01Nww"
-    )
+    private val id = arrayOf("UqLRqzTp6Rk", "u0BetD0OAcs", "uKM9ZuQB3MA", "1nX0kF2UwDc", "KK2OXwEke2Y0", "kfugSz3m_zA")
 
     @Test
     fun `video data extraction`() = runBlocking {

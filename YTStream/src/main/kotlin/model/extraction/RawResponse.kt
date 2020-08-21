@@ -22,12 +22,13 @@ inline class RawResponse(val raw: String) {
     val statusOk get() = patternStatusOk.matcher(raw).find()
 
     companion object {
-        suspend fun fromId(id: String): RawResponse =
-            RawResponse(
-                RetrofitService.ytApiService.getVideoInfo("https://www.youtube.com/get_video_info?video_id=$id&eurl=${"https://youtube.googleapis.com/v/$id".encode()}")
-                    .string().decode().replace("\\u0026", "&")
-            )
-
+        suspend fun fromId(id: String): RawResponse = try {
+            RetrofitService.ytApiService.getVideoInfo("https://www.youtube.com/get_video_info?video_id=$id&eurl=${"https://youtube.googleapis.com/v/$id".encode()}")
+        } catch (t: Throwable) {
+            null
+        }?.let {
+            RawResponse(it.string().decode().replace("\\u0026", "&"))
+        } ?: throw IllegalArgumentException("null video info")
 
         private val patternTitle: Pattern = Pattern.compile("\"title\"\\s*:\\s*\"(.*?)\"")
         private val patternVideoId: Pattern = Pattern.compile("\"videoId\"\\s*:\\s*\"(.+?)\"")

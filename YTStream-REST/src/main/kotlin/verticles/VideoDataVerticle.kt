@@ -30,8 +30,9 @@ class VideoDataVerticle(private val ytStream: YTStream, private val mapper: Obje
     private suspend fun handleVideoData(msg: Message<String>) {
         try {
             val id = msg.body().split(patternSplit).toTypedArray()
-            val videoData = ytStream.extractVideoData(*id).toList().toTypedArray()
-            msg.reply(mapper.writeValueAsString(videoData))
+            ytStream.extractVideoData(*id).toList().toTypedArray().let {
+                msg.reply(mapper.writeValueAsString(it))
+            }
         } catch (e: Exception) {
             msg.fail(0, e.message)
             e.printStackTrace()
