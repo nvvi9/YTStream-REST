@@ -1,4 +1,4 @@
-package utils
+package com.nvvi9.utils
 
 import java.net.URLDecoder
 import java.net.URLEncoder

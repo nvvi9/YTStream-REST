@@ -1,4 +1,4 @@
-package network
+package com.nvvi9.network
 
 import okhttp3.ResponseBody
 import retrofit2.http.GET

@@ -1,22 +1,22 @@
-package model.extraction
+package com.nvvi9.model.extraction
 
-import js.JsDecryption
+import com.nvvi9.js.JsDecryption
+import com.nvvi9.model.VideoDetails
+import com.nvvi9.model.streams.Stream
+import com.nvvi9.utils.decode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import model.VideoDetails
-import model.streams.Stream
-import utils.decode
 import java.util.regex.Pattern
 
 
 internal class EncodedStreams(
-    val encodedSignatures: Map<Int, String>,
-    val streams: List<Stream>,
-    val videoDetails: VideoDetails,
-    private val jsDecryption: JsDecryption?
+        val encodedSignatures: Map<Int, String>,
+        val streams: List<Stream>,
+        val videoDetails: VideoDetails,
+        private val jsDecryption: JsDecryption?
 ) {
 
     val jsCode: String?

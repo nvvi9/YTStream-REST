@@ -1,4 +1,4 @@
-package model.streams
+package com.nvvi9.model.streams
 
 
 enum class StreamType {

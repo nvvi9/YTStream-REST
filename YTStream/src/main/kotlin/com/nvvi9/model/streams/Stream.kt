@@ -1,7 +1,7 @@
-package model.streams
+package com.nvvi9.model.streams
 
-import model.codecs.AudioCodec
-import model.codecs.VideoCodec
+import com.nvvi9.model.codecs.AudioCodec
+import com.nvvi9.model.codecs.VideoCodec
 
 
 data class Stream(

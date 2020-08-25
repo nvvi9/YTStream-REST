@@ -1,4 +1,4 @@
-package model.codecs
+package com.nvvi9.model.codecs
 
 
 enum class VideoCodec {

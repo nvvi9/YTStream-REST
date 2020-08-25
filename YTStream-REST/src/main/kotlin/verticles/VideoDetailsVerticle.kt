@@ -1,7 +1,7 @@
 package verticles
 
-import YTStream
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.nvvi9.YTStream
 import io.vertx.core.eventbus.Message
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.toChannel

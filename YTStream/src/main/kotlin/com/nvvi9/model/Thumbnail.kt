@@ -1,4 +1,4 @@
-package model
+package com.nvvi9.model
 
 
 data class Thumbnail(

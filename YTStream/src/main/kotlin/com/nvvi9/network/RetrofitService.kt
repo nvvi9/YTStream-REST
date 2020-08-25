@@ -1,4 +1,4 @@
-package network
+package com.nvvi9.network
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

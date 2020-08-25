@@ -1,7 +1,7 @@
-package js
+package com.nvvi9.js
 
+import com.nvvi9.network.RetrofitService
 import kotlinx.coroutines.coroutineScope
-import network.RetrofitService
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 

@@ -1,8 +1,8 @@
-package model.extraction
+package com.nvvi9.model.extraction
 
-import network.RetrofitService
-import utils.decode
-import utils.encode
+import com.nvvi9.network.RetrofitService
+import com.nvvi9.utils.decode
+import com.nvvi9.utils.encode
 import java.util.regex.Pattern
 
 

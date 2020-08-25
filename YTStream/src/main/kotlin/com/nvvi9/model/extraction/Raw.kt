@@ -1,12 +1,12 @@
-package model.extraction
+package com.nvvi9.model.extraction
 
+import com.nvvi9.model.VideoDetails
+import com.nvvi9.network.RetrofitService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
-import model.VideoDetails
-import network.RetrofitService
 
 
 internal class Raw(

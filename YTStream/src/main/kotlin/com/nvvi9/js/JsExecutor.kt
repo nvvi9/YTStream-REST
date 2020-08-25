@@ -1,4 +1,4 @@
-package js
+package com.nvvi9.js
 
 import kotlinx.coroutines.coroutineScope
 import javax.script.Invocable

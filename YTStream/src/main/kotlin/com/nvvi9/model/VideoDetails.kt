@@ -1,10 +1,10 @@
-package model
+package com.nvvi9.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.nvvi9.model.extraction.RawResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import model.extraction.RawResponse
 
 
 data class VideoDetails(

@@ -1,14 +1,14 @@
-package model
+package com.nvvi9.model
 
-import js.JsExecutor
+import com.nvvi9.js.JsExecutor
+import com.nvvi9.model.extraction.EncodedStreams
+import com.nvvi9.model.streams.Stream
 import kotlinx.coroutines.flow.flow
-import model.extraction.EncodedStreams
-import model.streams.Stream
 
 
 data class VideoData(
-    val videoDetails: VideoDetails,
-    val streams: List<Stream>
+        val videoDetails: VideoDetails,
+        val streams: List<Stream>
 ) {
 
     companion object {
