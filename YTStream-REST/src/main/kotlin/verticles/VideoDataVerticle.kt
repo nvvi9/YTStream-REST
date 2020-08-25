@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import utils.VIDEO_DATA_ADDRESS
@@ -27,15 +28,13 @@ class VideoDataVerticle(private val ytStream: YTStream, private val mapper: Obje
         }
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun handleVideoData(msg: Message<String>) {
-        try {
-            val id = msg.body().split(patternSplit).toTypedArray()
-            ytStream.extractVideoData(*id).toList().toTypedArray().let {
-                msg.reply(mapper.writeValueAsString(it))
-            }
-        } catch (e: Exception) {
-            msg.fail(0, e.message)
-            e.printStackTrace()
-        }
+        val id = msg.body().split(patternSplit).toTypedArray()
+        ytStream.extractVideoData(*id)
+                .catch { it.printStackTrace() }
+                .toList().toTypedArray().let {
+                    msg.reply(mapper.writeValueAsString(it))
+                }
     }
 }

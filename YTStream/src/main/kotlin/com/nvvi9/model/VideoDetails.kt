@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.flowOn
 
 
 data class VideoDetails(
-        val id: String?,
-        val title: String?,
-        val channel: String?,
-        val channelId: String?,
+        val id: String,
+        val title: String,
+        val channel: String,
+        val channelId: String,
         val description: String?,
-        val durationSeconds: Long?,
-        val viewCount: Long?,
+        val durationSeconds: Long,
+        val viewCount: Long,
         val thumbnails: List<Thumbnail>,
         val expiresInSeconds: Long?,
         val isLiveStream: Boolean?,

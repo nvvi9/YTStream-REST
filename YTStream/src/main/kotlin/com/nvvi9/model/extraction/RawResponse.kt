@@ -9,17 +9,34 @@ import java.util.regex.Pattern
 @Suppress("BlockingMethodInNonBlockingContext")
 inline class RawResponse(val raw: String) {
 
-    val id get() = patternVideoId.matcher(raw).takeIf { it.find() }?.group(1)
-    val title get() = patternTitle.matcher(raw).takeIf { it.find() }?.group(1)
-    val isLiveStream get() = patternHlsvp.matcher(raw).find()
-    val author get() = patternAuthor.matcher(raw).takeIf { it.find() }?.group(1)
-    val channelId get() = patternChannelId.matcher(raw).takeIf { it.find() }?.group(1)
-    val description get() = patternShortDescription.matcher(raw).takeIf { it.find() }?.group(1)
-    val durationSeconds get() = patternLengthSeconds.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
-    val viewCount get() = patternViewCount.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
-    val expiresInSeconds get() = patternExpiresInSeconds.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
-    val isEncoded get() = patternCipher.matcher(raw).find()
-    val statusOk get() = patternStatusOk.matcher(raw).find()
+    val id
+        get() = patternVideoId.matcher(raw).takeIf { it.find() }?.group(1)
+                ?: throw IllegalStateException("null id")
+    val title
+        get() = patternTitle.matcher(raw).takeIf { it.find() }?.group(1)
+                ?: throw IllegalStateException("null title")
+    val isLiveStream
+        get() = patternHlsvp.matcher(raw).find()
+    val author
+        get() = patternAuthor.matcher(raw).takeIf { it.find() }?.group(1)
+                ?: throw IllegalStateException("null author")
+    val channelId
+        get() = patternChannelId.matcher(raw).takeIf { it.find() }?.group(1)
+                ?: throw IllegalStateException("null channel id")
+    val description
+        get() = patternShortDescription.matcher(raw).takeIf { it.find() }?.group(1)
+    val durationSeconds
+        get() = patternLengthSeconds.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
+                ?: throw IllegalStateException("null duration")
+    val viewCount
+        get() = patternViewCount.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
+                ?: throw IllegalStateException("null view count")
+    val expiresInSeconds
+        get() = patternExpiresInSeconds.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
+    val isEncoded
+        get() = patternCipher.matcher(raw).find()
+    val statusOk
+        get() = patternStatusOk.matcher(raw).find()
 
     companion object {
         suspend fun fromId(id: String): RawResponse = try {
