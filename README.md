@@ -1,2 +1,2 @@
 # YTStream
-[REST API](YTStream-REST/README.md) and [library](YTStream/README.md) for extracting YouTube video streaming URLs.
+[REST API](https://github.com/nvvi9/YTStream/tree/master/YTStream-REST) and [library](https://github.com/nvvi9/YTStream/tree/master/YTStream) for extracting YouTube video streaming URLs.
