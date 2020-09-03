@@ -7,7 +7,9 @@ import com.nvvi9.model.extraction.Raw
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.rx3.asObservable
 
 
@@ -25,9 +27,12 @@ class YTStream {
             id.asFlow()
                     .flatMapMerge { VideoDetails.fromIdFlow(it) }
 
+    suspend fun extractVideoDataList(vararg id: String) =
+            extractVideoData(*id).toList()
+
     fun extractVideoDataObservable(vararg id: String) =
-            extractVideoData(*id).asObservable()
+            extractVideoData(*id).filterNotNull().asObservable()
 
     fun extractVideoDetailsObservable(vararg id: String) =
-            extractVideoDetails(*id).asObservable()
+            extractVideoDetails(*id).filterNotNull().asObservable()
 }

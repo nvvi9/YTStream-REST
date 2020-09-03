@@ -3,6 +3,7 @@ package com.nvvi9.model
 import com.nvvi9.js.JsExecutor
 import com.nvvi9.model.extraction.EncodedStreams
 import com.nvvi9.model.streams.Stream
+import com.nvvi9.utils.encodeStreams
 import kotlinx.coroutines.flow.flow
 
 
@@ -12,27 +13,15 @@ data class VideoData(
 ) {
 
     companion object {
-
-        internal suspend fun fromEncodedStreamsFlow(encodedStreams: EncodedStreams) = flow<VideoData> {
-            val details = encodedStreams.videoDetails
-            val streams = encodedStreams.streams.toMutableList()
-
-
-            emit((encodedStreams.jsCode?.let { script ->
-                JsExecutor.executeScript("decode", script).split("\n").let {
-                    VideoData(details, streams.encodeStreams(it, encodedStreams.encodedSignatures))
+        
+        internal suspend fun fromEncodedStreamsFlow(encodedStreams: EncodedStreams?) = flow {
+            emit(encodedStreams?.run {
+                jsCode?.let { script ->
+                    JsExecutor.executeScript("decode", script)?.split("\n")?.let {
+                        VideoData(videoDetails, streams.toMutableList().encodeStreams(it, encodedSignatures))
+                    }
                 }
-            } ?: VideoData(details, streams)))
-        }
-
-        private fun MutableList<Stream>.encodeStreams(
-            decodeSignatures: List<String>,
-            encSignatures: Map<Int, String>
-        ): List<Stream> = apply {
-            encSignatures.keys.zip(decodeSignatures).forEach { (key, signature) ->
-                find { it.streamDetails.itag == key }.also { remove(it) }?.url?.plus("&sig=$signature")
-                    ?.let { Stream.fromItag(key, it) }?.let { add(it) }
-            }
+            })
         }
     }
 }

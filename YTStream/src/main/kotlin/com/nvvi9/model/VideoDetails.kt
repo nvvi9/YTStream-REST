@@ -2,7 +2,9 @@ package com.nvvi9.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.nvvi9.model.extraction.RawResponse
+import com.nvvi9.utils.ifNotNull
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
@@ -10,11 +12,11 @@ import kotlinx.coroutines.flow.flowOn
 data class VideoDetails(
         val id: String,
         val title: String,
-        val channel: String,
-        val channelId: String,
+        val channel: String?,
+        val channelId: String?,
         val description: String?,
-        val durationSeconds: Long,
-        val viewCount: Long,
+        val durationSeconds: Long?,
+        val viewCount: Long?,
         val thumbnails: List<Thumbnail>,
         val expiresInSeconds: Long?,
         val isLiveStream: Boolean?,
@@ -29,23 +31,25 @@ data class VideoDetails(
 
     companion object {
 
-        internal suspend fun fromIdFlow(id: String) = flow {
+        internal suspend fun fromId(id: String) = coroutineScope {
             val raw = RawResponse.fromId(id)
-
             val thumbnailUrl = "https://img.youtube.com/vi/$id"
-
             val thumbnails = listOf(
                     Thumbnail(120, 90, "$thumbnailUrl/default.jpg"),
                     Thumbnail(320, 180, "$thumbnailUrl/mqdefault.jpg"),
                     Thumbnail(480, 360, "$thumbnailUrl/hqdefault.jpg")
             )
 
-            emit(raw.run {
-                VideoDetails(
-                        id, title, author, channelId, description, durationSeconds, viewCount, thumbnails,
-                        expiresInSeconds, isLiveStream, isEncoded, statusOk, this
-                )
-            })
+            raw?.run {
+                ifNotNull(id, title) { id, title ->
+                    VideoDetails(id, title, author, channelId, description, durationSeconds, viewCount, thumbnails,
+                            expiresInSeconds, isLiveStream, isEncoded, statusOk, this)
+                }
+            }
+        }
+
+        internal suspend fun fromIdFlow(id: String) = flow {
+            emit(fromId(id))
         }.flowOn(Dispatchers.IO)
     }
 }

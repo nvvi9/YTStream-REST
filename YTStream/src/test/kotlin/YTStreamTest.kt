@@ -22,24 +22,24 @@ class YTStreamTest {
     @Test
     fun `video data extraction`() = runBlocking {
         ytStream.extractVideoData(*id).toList().forEach {
-            assertFalse("empty streams ${it.videoDetails.id}", it.streams.isEmpty())
+            assertFalse("empty streams ${it?.videoDetails?.id}", it?.streams?.isEmpty() == true)
         }
     }
 
     @Test
     fun `video details extraction`() = runBlocking {
         ytStream.extractVideoDetails(*id).toList().forEach {
-            assertNotNull("null id", it.id)
-            assertNotNull("null channel", it.channel)
-            assertNotNull("null title", it.title)
-            assertNotNull("null expiresInSeconds", it.expiresInSeconds)
+            assertNotNull("null id", it?.id)
+            assertNotNull("null channel ${it?.id}", it?.channel)
+            assertNotNull("null title ${it?.id}", it?.title)
+            assertNotNull("null expiresInSeconds ${it?.id}", it?.expiresInSeconds)
         }
     }
 
     @Test
     fun `video data rx`() = runBlocking {
         ytStream.extractVideoDataObservable(*id).collect {
-            assertFalse("empty streams", it.streams.isEmpty())
+            assertFalse("empty streams ${it?.videoDetails?.id}", it?.streams?.isEmpty() == true)
         }
     }
 }

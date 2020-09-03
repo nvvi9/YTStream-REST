@@ -29,40 +29,31 @@ internal class EncodedStreams(
 
     companion object {
 
-        suspend fun fromRawFlow(raw: Raw) = flow {
-            emit(fromRaw(raw))
+        suspend fun fromRawFlow(raw: Raw?) = flow {
+            emit(raw?.let { fromRaw(it) })
         }.flowOn(Dispatchers.IO)
 
-        private suspend fun fromRaw(raw: Raw): EncodedStreams {
-            return coroutineScope {
-                val isEncoded = raw.videoDetails.isSignatureEncoded
-                val statusOk = raw.videoDetails.statusOk
+        private suspend fun fromRaw(raw: Raw) = coroutineScope {
+            val isEncoded = raw.videoDetails.isSignatureEncoded
+            val statusOk = raw.videoDetails.statusOk
 
-                val jsDecryptionDef = if (isEncoded || !statusOk) {
-                    async(Dispatchers.IO) {
-                        JsDecryption.fromVideoPageSource(raw.videoPageSource)
-                    }
-                } else {
-                    null
+            val jsDecryptionDef = if (isEncoded || !statusOk) {
+                async(Dispatchers.IO) {
+                    JsDecryption.fromVideoPageSource(raw.videoPageSource)
                 }
-
-                val (encodedSignatures, streams) = getEncSignaturesStreams(
-                    isEncoded,
-                    if (isEncoded || !statusOk) raw.videoPageSource else raw.videoDetails.rawResponse.raw
-                )
-
-                EncodedStreams(
-                    encodedSignatures,
-                    streams,
-                    raw.videoDetails,
-                    jsDecryptionDef?.await()
-                )
+            } else {
+                null
             }
+
+            val (encodedSignatures, streams) =
+                    getEncSignaturesStreams(isEncoded, if (isEncoded || !statusOk) raw.videoPageSource else raw.videoDetails.rawResponse.raw)
+
+            EncodedStreams(encodedSignatures, streams, raw.videoDetails, jsDecryptionDef?.await())
         }
 
         private fun getEncSignaturesStreams(
-            isEncoded: Boolean,
-            raw: String
+                isEncoded: Boolean,
+                raw: String
         ): Pair<Map<Int, String>, MutableList<Stream>> {
             val matcher = (if (isEncoded) patternCipher else patternUrl).matcher(raw)
             val encodedSignatures = mutableMapOf<Int, String>()
@@ -90,7 +81,7 @@ internal class EncodedStreams(
                 }
 
                 val itag = patternItag.matcher(url).takeIf { it.find() }?.group(1)
-                    ?.takeUnless { it.contains("&source=yt_otf&") }?.toInt() ?: continue
+                        ?.takeUnless { it.contains("&source=yt_otf&") }?.toInt() ?: continue
 
                 Stream.fromItag(itag, url)?.let { streams.add(it) }
 

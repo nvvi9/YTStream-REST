@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import utils.VIDEO_DATA_ADDRESS
@@ -33,6 +34,7 @@ class VideoDataVerticle(private val ytStream: YTStream, private val mapper: Obje
         val id = msg.body().split(patternSplit).toTypedArray()
         ytStream.extractVideoData(*id)
                 .catch { it.printStackTrace() }
+                .filterNotNull()
                 .toList().toTypedArray().let {
                     msg.reply(mapper.writeValueAsString(it))
                 }
