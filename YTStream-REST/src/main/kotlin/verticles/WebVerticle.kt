@@ -41,6 +41,7 @@ class WebVerticle(private val mapper: ObjectMapper) : CoroutineVerticle() {
     override suspend fun start() {
         vertx.createHttpServer()
                 .requestHandler(router())
+//                .listen(8080)
                 .listenAwait(System.getenv("PORT").toInt(), System.getProperty("http.address", "0.0.0.0"))
     }
 }

@@ -14,7 +14,7 @@ application {
 }
 
 group = "com.nvvi9"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
@@ -56,8 +56,8 @@ val doOnChange = "$projectDir/gradlew classes"
 
 tasks {
     named<ShadowJar>("shadowJar") {
-        archiveBaseName.set("rest")
-        archiveClassifier.set("shadow")
+        archiveBaseName.set("ytstream-rest")
+        archiveClassifier.set("")
         manifest {
             attributes("Main-Verticle" to mainVerticleName)
         }
