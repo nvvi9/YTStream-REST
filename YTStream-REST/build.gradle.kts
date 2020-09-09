@@ -2,8 +2,6 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    java
-    application
     kotlin("jvm") version "1.3.72"
     id("com.github.johnrengelman.shadow") version "5.0.0"
 }
@@ -12,26 +10,11 @@ application {
     mainClassName = "io.vertx.core.Launcher"
 }
 
-group = "com.nvvi9"
-version = "0.1.1"
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
-val coroutinesVersion = "1.3.8"
 val vertxVersion = "4.0.0.Beta1"
-val shadowVersion = "5.0.0"
 val jacksonVersion = "2.11.2"
 val koinVersion = "2.1.6"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-
-    // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-
     // Vert.x
     implementation("io.vertx:vertx-core:$vertxVersion")
     implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
@@ -39,7 +22,6 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
 
     // Jackson
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     // Koin
