@@ -2,33 +2,11 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.72"
     id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
 application {
     mainClassName = "io.vertx.core.Launcher"
-}
-
-val vertxVersion = "4.0.0.Beta1"
-val jacksonVersion = "2.11.2"
-val koinVersion = "2.1.6"
-
-dependencies {
-    // Vert.x
-    implementation("io.vertx:vertx-core:$vertxVersion")
-    implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
-    implementation("io.vertx:vertx-web:$vertxVersion")
-    implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
-
-    // Jackson
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-
-    // Koin
-    implementation("org.koin:koin-core:$koinVersion")
-
-    // YTStream
-    implementation(project(":YTStream"))
 }
 
 val mainVerticleName = "MainVerticle"

@@ -28,6 +28,6 @@ val serviceModule = module {
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerModule(KotlinModule())
 
-    single { provideMapper() }
+    factory { provideMapper() }
     single { YTStream() }
 }
