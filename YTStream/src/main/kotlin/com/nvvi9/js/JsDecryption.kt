@@ -1,10 +1,8 @@
 package com.nvvi9.js
 
 import com.nvvi9.network.KtorService
-import io.ktor.client.request.*
-import kotlinx.coroutines.Dispatchers
+import com.nvvi9.utils.tryOrNull
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 
@@ -23,10 +21,8 @@ internal data class JsDecryption(
             patternDecryptionJsFile.matcher(videPageSource).takeIf { it.find() }
                     ?.group(0)?.replace("\\/", "/")?.let { jsPath ->
                         jsHashMap.getOrPut(jsPath) {
-                            try {
-                                withContext(Dispatchers.IO) { KtorService.ktor.get<String>("https://www.youtube.com/s/$jsPath").replace("\n", " ") }
-                            } catch (t: Throwable) {
-                                null
+                            tryOrNull {
+                                KtorService.getJsFile(jsPath).replace("\n", " ")
                             }?.let { jsFile ->
                                 var matcher = patternSignatureDecryptionFunction.matcher(jsFile)
                                 if (matcher.find()) {

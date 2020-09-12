@@ -1,10 +1,9 @@
-package com.nvvi9.model.extraction
+package com.nvvi9.model.raw
 
 import com.nvvi9.model.VideoDetails
 import com.nvvi9.network.KtorService
 import com.nvvi9.utils.ifNotNull
-import io.ktor.client.request.*
-import kotlinx.coroutines.Dispatchers
+import com.nvvi9.utils.tryOrNull
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
@@ -22,15 +21,13 @@ internal class Raw(
         }
 
         private suspend fun fromId(id: String) = coroutineScope {
-            val videoPageSource = async(Dispatchers.IO) {
-                try {
-                    KtorService.ktor.get<String>("https://www.youtube.com/watch?id=$id").replace("\\\"", "\"")
-                } catch (t: Throwable) {
-                    null
+            val videoPageSource = async {
+                tryOrNull {
+                    KtorService.getVideoPage(id).replace("\\\"", "\"")
                 }
             }
 
-            val videoDetails = async(Dispatchers.IO) {
+            val videoDetails = async {
                 VideoDetails.fromId(id)
             }
 

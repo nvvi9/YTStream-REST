@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.List;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
@@ -17,21 +19,30 @@ public class YTStreamRxTest {
 
     @Test
     public void videoDataExtraction() {
-        ytStream.extractVideoDataObservable(id)
+        ytStream.extractVideoDataObservable(id).toList()
                 .blockingSubscribe(this::checkVideoData);
     }
 
     @Test
     public void videoDetailsExtraction() {
-        ytStream.extractVideoDetailsObservable(id)
+        ytStream.extractVideoDetailsObservable(id).toList()
                 .blockingSubscribe(this::checkVideoDetails);
+    }
+
+    private void checkVideoData(List<VideoData> videoDataList) {
+        assertFalse("empty videoData", videoDataList.isEmpty());
+        videoDataList.forEach(this::checkVideoData);
     }
 
     private void checkVideoData(VideoData videoData) {
         assertNotNull("null videoData", videoData);
         checkVideoDetails(videoData.getVideoDetails());
         assertFalse("empty streams " + videoData.getVideoDetails().getId(), videoData.getStreams().isEmpty());
+    }
 
+    private void checkVideoDetails(List<VideoDetails> videoDetailsList) {
+        assertFalse("empty videoDetails", videoDetailsList.isEmpty());
+        videoDetailsList.forEach(this::checkVideoDetails);
     }
 
     private void checkVideoDetails(VideoDetails videoDetails) {

@@ -20,6 +20,13 @@ internal inline fun <A, B, R> ifNotNull(a: A?, b: B?, f: (A, B) -> R): R? {
     }
 }
 
+internal inline fun <R> tryOrNull(action: () -> R) =
+        try {
+            action()
+        } catch (t: Throwable) {
+            null
+        }
+
 internal fun MutableList<Stream>.encodeStreams(decodeSignatures: List<String>, encSignatures: Map<Int, String>): List<Stream> = apply {
     encSignatures.keys.zip(decodeSignatures).forEach { (key, signature) ->
         find { it.streamDetails.itag == key }.also { remove(it) }?.url?.plus("&sig=$signature")

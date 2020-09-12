@@ -1,7 +1,7 @@
 package com.nvvi9.model
 
 import com.nvvi9.js.JsExecutor
-import com.nvvi9.model.extraction.EncodedStreams
+import com.nvvi9.model.streams.EncodedStreams
 import com.nvvi9.model.streams.Stream
 import com.nvvi9.utils.encodeStreams
 import kotlinx.coroutines.flow.flow

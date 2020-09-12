@@ -3,8 +3,7 @@ import com.nvvi9.model.VideoData
 import com.nvvi9.model.VideoDetails
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -23,28 +22,14 @@ class YTStreamTest {
 
     @Test
     fun `video data extraction`() = runBlocking {
-        ytStream.extractVideoData(*id).toList().forEach {
+        ytStream.extractVideoData(*id).collect {
             checkVideoData(it)
         }
     }
 
     @Test
     fun `video details extraction`() = runBlocking {
-        ytStream.extractVideoDetails(*id).toList().forEach {
-            checkVideoDetails(it)
-        }
-    }
-
-    @Test
-    fun `single video data extraction`() = runBlocking {
-        ytStream.extractVideoData(id.random()).single().let {
-            checkVideoData(it)
-        }
-    }
-
-    @Test
-    fun `single video details extraction`() = runBlocking {
-        ytStream.extractVideoDetails(id.random()).single().let {
+        ytStream.extractVideoDetails(*id).collect {
             checkVideoDetails(it)
         }
     }
@@ -67,7 +52,7 @@ class YTStreamTest {
         videoData?.run {
             checkVideoDetails(videoDetails)
             assertFalse("empty streams ${videoDetails.id}", streams.isEmpty())
-        } ?: assert(true) { "null videoData" }
+        } ?: assertNotNull("null videoData", videoData)
     }
 
     private fun checkVideoDetails(videoDetails: VideoDetails?) {
@@ -76,6 +61,6 @@ class YTStreamTest {
             assertNotNull("null channel $id", channel)
             assertNotNull("null title $id", title)
             assertNotNull("null expiresInSeconds $id", expiresInSeconds)
-        } ?: assert(true) { "null videoDetails" }
+        } ?: assertNotNull("null videoDetails", videoDetails)
     }
 }

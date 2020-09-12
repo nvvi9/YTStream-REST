@@ -1,11 +1,9 @@
-package com.nvvi9.model.extraction
+package com.nvvi9.model.raw
 
 import com.nvvi9.network.KtorService
 import com.nvvi9.utils.decode
-import com.nvvi9.utils.encode
-import io.ktor.client.request.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.nvvi9.utils.tryOrNull
+import kotlinx.coroutines.coroutineScope
 import java.util.regex.Pattern
 
 
@@ -26,14 +24,11 @@ inline class RawResponse(val raw: String) {
 
     companion object {
 
-        internal suspend fun fromId(id: String) = withContext(Dispatchers.IO) {
-            try {
-                KtorService.ktor.get<String>("https://www.youtube.com/get_video_info?video_id=$id&eurl=${"https://youtube.googleapis.com/v/$id".encode()}")
-                        .decode().replace("\\u0026", "&").let {
-                            RawResponse(it)
-                        }
-            } catch (t: Throwable) {
-                null
+        internal suspend fun fromId(id: String) = coroutineScope {
+            tryOrNull {
+                KtorService.getVideoInfo(id).decode().replace("\\u0026", "&").let {
+                    RawResponse(it)
+                }
             }
         }
 

@@ -1,7 +1,7 @@
 package com.nvvi9.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.nvvi9.model.extraction.RawResponse
+import com.nvvi9.model.raw.RawResponse
 import com.nvvi9.utils.ifNotNull
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow

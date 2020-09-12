@@ -1,10 +1,9 @@
-package com.nvvi9.model.extraction
+package com.nvvi9.model.streams
 
 import com.nvvi9.js.JsDecryption
 import com.nvvi9.model.VideoDetails
-import com.nvvi9.model.streams.Stream
+import com.nvvi9.model.raw.Raw
 import com.nvvi9.utils.decode
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
@@ -37,9 +36,7 @@ internal class EncodedStreams(
             val statusOk = raw.videoDetails.statusOk
 
             val jsDecryptionDef = if (isEncoded || !statusOk) {
-                async(Dispatchers.IO) {
-                    JsDecryption.fromVideoPageSource(raw.videoPageSource)
-                }
+                async { JsDecryption.fromVideoPageSource(raw.videoPageSource) }
             } else {
                 null
             }
