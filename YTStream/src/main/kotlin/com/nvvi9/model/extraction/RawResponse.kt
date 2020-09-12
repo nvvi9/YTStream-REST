@@ -1,8 +1,11 @@
 package com.nvvi9.model.extraction
 
-import com.nvvi9.network.RetrofitService
+import com.nvvi9.network.KtorService
 import com.nvvi9.utils.decode
 import com.nvvi9.utils.encode
+import io.ktor.client.request.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
 
 
@@ -23,11 +26,15 @@ inline class RawResponse(val raw: String) {
 
     companion object {
 
-        internal suspend fun fromId(id: String): RawResponse? = try {
-            RawResponse(RetrofitService.ytApiService.getVideoInfo("https://www.youtube.com/get_video_info?video_id=$id&eurl=${"https://youtube.googleapis.com/v/$id".encode()}")
-                    .string().decode().replace("\\u0026", "&"))
-        } catch (t: Throwable) {
-            null
+        internal suspend fun fromId(id: String) = withContext(Dispatchers.IO) {
+            try {
+                KtorService.ktor.get<String>("https://www.youtube.com/get_video_info?video_id=$id&eurl=${"https://youtube.googleapis.com/v/$id".encode()}")
+                        .decode().replace("\\u0026", "&").let {
+                            RawResponse(it)
+                        }
+            } catch (t: Throwable) {
+                null
+            }
         }
 
         private val patternTitle: Pattern = Pattern.compile("\"title\"\\s*:\\s*\"(.*?)\"")

@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import java.util.regex.Pattern
 
 
@@ -31,7 +30,7 @@ internal class EncodedStreams(
 
         suspend fun fromRawFlow(raw: Raw?) = flow {
             emit(raw?.let { fromRaw(it) })
-        }.flowOn(Dispatchers.IO)
+        }
 
         private suspend fun fromRaw(raw: Raw) = coroutineScope {
             val isEncoded = raw.videoDetails.isSignatureEncoded

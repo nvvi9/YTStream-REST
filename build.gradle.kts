@@ -9,6 +9,7 @@ val retrofitVersion = "2.9.0"
 val junitVersion = "4.13"
 val vertxVersion = "4.0.0.Beta1"
 val koinVersion = "2.1.6"
+val ktorVersion = "1.4.0"
 
 subprojects {
     apply(plugin = "application")
@@ -40,8 +41,9 @@ project(":YTStream") {
         // Coroutines
         "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-rx3:$coroutinesVersion")
 
-        // Retrofit
-        "implementation"("com.squareup.retrofit2:retrofit:$retrofitVersion")
+        // Ktor
+        "implementation"("io.ktor:ktor-client-core:$ktorVersion")
+        "implementation"("io.ktor:ktor-client-okhttp:$ktorVersion")
 
         // JUnit
         "testImplementation"("junit:junit:$junitVersion")

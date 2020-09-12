@@ -12,8 +12,6 @@ internal object JsExecutor {
 
     suspend fun executeScript(functionName: String, script: String) = coroutineScope {
         scriptEngine.eval(script)
-        ((scriptEngine as Invocable).invokeFunction(functionName) as String?).also {
-            println("JsExecutor $it")
-        }
+        ((scriptEngine as Invocable).invokeFunction(functionName) as String?)
     }
 }

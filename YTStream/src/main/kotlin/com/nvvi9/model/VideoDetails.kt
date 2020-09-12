@@ -3,10 +3,8 @@ package com.nvvi9.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.nvvi9.model.extraction.RawResponse
 import com.nvvi9.utils.ifNotNull
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 
 
 data class VideoDetails(
@@ -50,6 +48,6 @@ data class VideoDetails(
 
         internal suspend fun fromIdFlow(id: String) = flow {
             emit(fromId(id))
-        }.flowOn(Dispatchers.IO)
+        }
     }
 }

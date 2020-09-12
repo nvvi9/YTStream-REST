@@ -1,7 +1,10 @@
 package com.nvvi9.js
 
-import com.nvvi9.network.RetrofitService
+import com.nvvi9.network.KtorService
+import io.ktor.client.request.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 
@@ -18,74 +21,32 @@ internal data class JsDecryption(
         @Suppress("BlockingMethodInNonBlockingContext")
         suspend fun fromVideoPageSource(videPageSource: String) = coroutineScope {
             patternDecryptionJsFile.matcher(videPageSource).takeIf { it.find() }
-                    ?.group(0)?.replace("\\/", "/")?.let {
-                        jsHashMap.getOrPut(it) {
-                            val jsFile = RetrofitService.ytApiService.getJsFile(it).string().replace("\n", " ")
-                            var matcher = patternSignatureDecryptionFunction.matcher(jsFile)
-                            if (matcher.find()) {
-                                val decryptionFunction = matcher.group(1)
-                                val patternMainVariable =
-                                        Pattern.compile("(var |\\s|,|;)${decryptionFunction?.replace("$", "\\$")}(=function\\((.{1,3})\\)\\{)")
-                                matcher = patternMainVariable.matcher(jsFile)
-                                var mainVariable: String = if (matcher.find()) {
-                                    "var $decryptionFunction ${matcher.group(2)}"
-                                } else {
-                                    val patternMainFunction =
-                                            Pattern.compile("function ${decryptionFunction?.replace("$", "\\$")}(\\((.{1,3})\\)\\{)")
-                                    matcher = patternMainFunction.matcher(jsFile)
-                                    "function ${matcher.takeIf { it.find() }?.group(2)}"
-                                }
-                                var startIndex = matcher.end()
-                                var braces = 1
-                                for (i in startIndex until jsFile.length) {
-                                    if (braces == 0 && startIndex + 5 < i) {
-                                        mainVariable += jsFile.substring(startIndex, i) + ";"
-                                        break
+                    ?.group(0)?.replace("\\/", "/")?.let { jsPath ->
+                        jsHashMap.getOrPut(jsPath) {
+                            try {
+                                withContext(Dispatchers.IO) { KtorService.ktor.get<String>("https://www.youtube.com/s/$jsPath").replace("\n", " ") }
+                            } catch (t: Throwable) {
+                                null
+                            }?.let { jsFile ->
+                                var matcher = patternSignatureDecryptionFunction.matcher(jsFile)
+                                if (matcher.find()) {
+                                    val decryptionFunction = matcher.group(1)
+                                    val patternMainVariable =
+                                            Pattern.compile("(var |\\s|,|;)${decryptionFunction?.replace("$", "\\$")}(=function\\((.{1,3})\\)\\{)")
+                                    matcher = patternMainVariable.matcher(jsFile)
+                                    var mainVariable: String = if (matcher.find()) {
+                                        "var $decryptionFunction ${matcher.group(2)}"
+                                    } else {
+                                        val patternMainFunction =
+                                                Pattern.compile("function ${decryptionFunction?.replace("$", "\\$")}(\\((.{1,3})\\)\\{)")
+                                        matcher = patternMainFunction.matcher(jsFile)
+                                        "function ${matcher.takeIf { it.find() }?.group(2)}"
                                     }
-                                    if (jsFile[i] == '{') {
-                                        braces++
-                                    } else if (jsFile[i] == '}') {
-                                        braces--
-                                    }
-                                }
-
-                                matcher = patternVariableFunction.matcher(mainVariable)
-
-                                while (matcher.find()) {
-                                    val variableDef = "var ${matcher.group(2)}={"
-                                    if (mainVariable.contains(variableDef)) {
-                                        continue
-                                    }
-                                    startIndex = jsFile.indexOf(variableDef) + variableDef.length
-
-                                    braces = 1
-
-                                    for (i in startIndex until jsFile.length) {
-                                        if (braces == 0) {
-                                            mainVariable += variableDef + jsFile.substring(startIndex, i) + ";"
-                                            break
-                                        }
-                                        if (jsFile[i] == '{') {
-                                            braces++
-                                        } else if (jsFile[i] == '}') {
-                                            braces--
-                                        }
-                                    }
-                                }
-
-                                matcher = patternFunction.matcher(mainVariable)
-                                while (matcher.find()) {
-                                    val functionDef = "function ${matcher.group(2)}("
-                                    if (mainVariable.contains(functionDef)) {
-                                        continue
-                                    }
-                                    startIndex = jsFile.indexOf(functionDef) + functionDef.length
-
-                                    braces = 0
-
+                                    var startIndex = matcher.end()
+                                    var braces = 1
                                     for (i in startIndex until jsFile.length) {
                                         if (braces == 0 && startIndex + 5 < i) {
-                                            mainVariable += functionDef + jsFile.substring(startIndex, i) + ";"
+                                            mainVariable += jsFile.substring(startIndex, i) + ";"
                                             break
                                         }
                                         if (jsFile[i] == '{') {
@@ -94,10 +55,57 @@ internal data class JsDecryption(
                                             braces--
                                         }
                                     }
+
+                                    matcher = patternVariableFunction.matcher(mainVariable)
+
+                                    while (matcher.find()) {
+                                        val variableDef = "var ${matcher.group(2)}={"
+                                        if (mainVariable.contains(variableDef)) {
+                                            continue
+                                        }
+                                        startIndex = jsFile.indexOf(variableDef) + variableDef.length
+
+                                        braces = 1
+
+                                        for (i in startIndex until jsFile.length) {
+                                            if (braces == 0) {
+                                                mainVariable += variableDef + jsFile.substring(startIndex, i) + ";"
+                                                break
+                                            }
+                                            if (jsFile[i] == '{') {
+                                                braces++
+                                            } else if (jsFile[i] == '}') {
+                                                braces--
+                                            }
+                                        }
+                                    }
+
+                                    matcher = patternFunction.matcher(mainVariable)
+                                    while (matcher.find()) {
+                                        val functionDef = "function ${matcher.group(2)}("
+                                        if (mainVariable.contains(functionDef)) {
+                                            continue
+                                        }
+                                        startIndex = jsFile.indexOf(functionDef) + functionDef.length
+
+                                        braces = 0
+
+                                        for (i in startIndex until jsFile.length) {
+                                            if (braces == 0 && startIndex + 5 < i) {
+                                                mainVariable += functionDef + jsFile.substring(startIndex, i) + ";"
+                                                break
+                                            }
+                                            if (jsFile[i] == '{') {
+                                                braces++
+                                            } else if (jsFile[i] == '}') {
+                                                braces--
+                                            }
+                                        }
+                                    }
+                                    JsDecryption(mainVariable, decryptionFunction)
+                                } else {
+                                    null
                                 }
-                                JsDecryption(mainVariable, decryptionFunction)
-                            } else {
-                                null
                             }
                         }
                     }
