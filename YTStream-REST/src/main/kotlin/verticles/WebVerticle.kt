@@ -1,7 +1,5 @@
 package verticles
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.AsyncResult
 import io.vertx.core.eventbus.Message
 import io.vertx.ext.web.Router
@@ -11,7 +9,7 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import utils.*
 
 
-class WebVerticle(private val mapper: ObjectMapper) : CoroutineVerticle() {
+class WebVerticle : CoroutineVerticle() {
 
     private fun router() = Router.router(vertx).apply {
 
@@ -25,14 +23,14 @@ class WebVerticle(private val mapper: ObjectMapper) : CoroutineVerticle() {
         get("/videodetails").asyncHandler {
             vertx.eventBusRequest(VIDEO_DETAILS_ADDRESS, it.request().getParam("id"),
                     { ar: AsyncResult<Message<String>> ->
-                        it.response().endJson(mapper.readValue(ar.result().body()))
+                        it.response().endJson(ar.result().body().readValue())
                     }, { it.fail(500) })
         }
 
         get("/videodata").asyncHandler {
             vertx.eventBusRequest(VIDEO_DATA_ADDRESS, it.request().getParam("id"),
                     { ar: AsyncResult<Message<String>> ->
-                        it.response().endJson(mapper.readValue(ar.result().body()))
+                        it.response().endJson(ar.result().body().readValue())
                     }, { it.fail(500) })
         }
     }

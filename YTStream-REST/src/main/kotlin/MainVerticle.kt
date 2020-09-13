@@ -1,5 +1,4 @@
 import di.KoinVerticleFactory
-import di.serviceModule
 import di.verticleModule
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,7 +14,7 @@ import verticles.WebVerticle
 class MainVerticle : CoroutineVerticle() {
 
     override suspend fun start() {
-        startKoin { modules(verticleModule, serviceModule) }
+        startKoin { modules(verticleModule) }
         vertx.apply {
             registerVerticleFactory(KoinVerticleFactory)
             deployVerticle("${KoinVerticleFactory.prefix()}:${WebVerticle::class.java.canonicalName}")

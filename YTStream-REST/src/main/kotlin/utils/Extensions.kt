@@ -1,5 +1,9 @@
 package utils
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.AsyncResult
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.Message
@@ -55,3 +59,13 @@ inline fun <T> Vertx.eventBusRequest(
         }
     }
 }
+
+fun String.readValue() =
+        getMapper().readValue<Any>(this)
+
+fun <T> T.writeAsString() =
+        getMapper().writeValueAsString(this)
+
+private fun getMapper() =
+        ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                .registerModule(KotlinModule())
