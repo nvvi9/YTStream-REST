@@ -1,6 +1,6 @@
-import com.nvvi9.YTStream
-import com.nvvi9.model.VideoData
-import com.nvvi9.model.VideoDetails
+import com.nvvi9.ytstream.YTStream
+import com.nvvi9.ytstream.model.VideoData
+import com.nvvi9.ytstream.model.VideoDetails
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect

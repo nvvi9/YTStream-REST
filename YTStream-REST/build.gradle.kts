@@ -9,7 +9,7 @@ application {
     mainClassName = "io.vertx.core.Launcher"
 }
 
-val mainVerticleName = "MainVerticle"
+val mainVerticleName = "com.nvvi9.rest.MainVerticle"
 val watchForChange = "src/**/*.*"
 val doOnChange = "$projectDir/gradlew classes"
 

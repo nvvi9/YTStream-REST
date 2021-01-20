@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 application {
-    mainClassName = "com.nvvi9.YTStream"
+    mainClassName = "com.nvvi9.ytstream.YTStream"
 }
 
 tasks {
