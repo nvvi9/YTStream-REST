@@ -1,0 +1,11 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "com.nvvi9";
+package com.nvvi9;
+
+enum StreamType{
+  VIDEO = 0;
+  AUDIO = 1;
+  LIVE = 2;
+  MULTIPLEXED = 3;
+}

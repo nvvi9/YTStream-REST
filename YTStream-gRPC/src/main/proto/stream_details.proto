@@ -1,0 +1,19 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "com.nvvi9";
+import "stream_type.proto";
+import "extension.proto";
+import "audio_codec.proto";
+import "video_codec.proto";
+package com.nvvi9;
+
+message StreamDetails{
+  int32  itag = 1;
+  StreamType stream_type = 2;
+  Extension extension = 3;
+  AudioCodec audio_codec = 4;
+  VideoCodec video_codec = 5;
+  int32 quality = 6;
+  int32 bitrate = 7;
+  int32 fps = 8;
+}

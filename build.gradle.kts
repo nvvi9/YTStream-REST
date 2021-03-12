@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.4.10" apply false
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.4.10" apply false
 }
 
 val coroutinesVersion = "1.3.8"
@@ -10,6 +11,10 @@ val junitVersion = "4.13"
 val vertxVersion = "4.0.0.Beta1"
 val koinVersion = "2.1.6"
 val ktorVersion = "1.4.0"
+val grpcKotlinVersion = "1.0.0"
+val grpcVersion = "1.12.0"
+val reactiveGrpcVersion = "1.0.1"
+
 
 subprojects {
     apply(plugin = "application")
@@ -33,6 +38,9 @@ subprojects {
 
         // Jackson
         "implementation"("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+
+        // JUnit
+        "testImplementation"("junit:junit:$junitVersion")
     }
 }
 
@@ -44,9 +52,6 @@ project(":YTStream") {
         // Ktor
         "implementation"("io.ktor:ktor-client-core:$ktorVersion")
         "implementation"("io.ktor:ktor-client-okhttp:$ktorVersion")
-
-        // JUnit
-        "testImplementation"("junit:junit:$junitVersion")
 
         // RxJava test
         "testImplementation"("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
@@ -66,6 +71,31 @@ project(":YTStream-REST") {
 
         // Koin
         "implementation"("org.koin:koin-core:$koinVersion")
+
+        // YTStream
+        "implementation"(project(":YTStream"))
+
+        "testImplementation"("io.ktor:ktor-client-okhttp:$ktorVersion")
+    }
+}
+
+project(":YTStream-gRPC") {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "kotlin-kapt")
+    apply(plugin = "kotlin-allopen")
+
+    dependencies {
+        // Kotlin reflection
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect")
+
+        // gRPC
+        "implementation"("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
+        "implementation"("io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion")
+        "implementation"("io.grpc:grpc-stub:$grpcVersion")
+        "implementation"("io.grpc:grpc-protobuf:$grpcVersion")
+
+        // Reactive-gRPC
+        "implementation"("com.salesforce.servicelibs:rxgrpc-stub:$reactiveGrpcVersion")
 
         // YTStream
         "implementation"(project(":YTStream"))

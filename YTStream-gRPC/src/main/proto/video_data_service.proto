@@ -1,0 +1,17 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "com.nvvi9";
+import "id_query.proto";
+import "video_details.proto";
+import "video_data.proto";
+
+package com.nvvi9;
+
+service VideoDataService{
+
+  rpc getVideoData(IdQuery) returns (stream VideoData){
+  }
+
+  rpc getVideoDetails(IdQuery) returns (stream VideoDetails){
+  }
+}

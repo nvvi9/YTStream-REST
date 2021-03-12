@@ -1,0 +1,12 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "com.nvvi9";
+package com.nvvi9;
+
+enum Extension{
+  MP4 = 0;
+  M4A = 1;
+  THREE_GP = 3;
+  FLV = 4;
+  WEBM = 5;
+}

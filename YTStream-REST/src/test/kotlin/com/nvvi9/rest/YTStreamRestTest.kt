@@ -1,23 +1,21 @@
-import com.nvvi9.ytstream.YTStream
-import com.nvvi9.ytstream.model.VideoData
-import com.nvvi9.ytstream.model.VideoDetails
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
+package com.nvvi9.rest
+
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.request.*
+import io.vertx.core.json.Json
+import io.vertx.core.json.JsonArray
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
+import okhttp3.OkHttpClient
+import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
-
-@FlowPreview
-@ExperimentalCoroutinesApi
 @RunWith(JUnit4::class)
-class YTStreamTest {
+class YTStreamRestTest {
 
-    private val ytStream = YTStream()
     private val id = arrayOf(
         "UqLRqzTp6Rk", "u0BetD0OAcs", "uKM9ZuQB3MA", "1nX0kF2UwDc", "kfugSz3m_zA",
         "UqLRqzTp6Rk", "u0BetD0OAcs", "uKM9ZuQB3MA", "1nX0kF2UwDc", "kfugSz3m_zA",
@@ -55,47 +53,43 @@ class YTStreamTest {
         "UqLRqzTp6Rk", "u0BetD0OAcs", "uKM9ZuQB3MA", "1nX0kF2UwDc", "kfugSz3m_zA",
     )
 
-    @Test
-    fun `video data extraction`() = runBlocking {
-        ytStream.extractVideoData(*id).collect {
-            checkVideoData(it)
+    private val baseUrl = "http://localhost:8081"
+
+    private lateinit var ktor: HttpClient
+
+    @Before
+    fun init() {
+        ktor = HttpClient(OkHttp) {
+            engine {
+                preconfigured = OkHttpClient.Builder()
+                    .addNetworkInterceptor {
+                        it.proceed(
+                            it.request()
+                                .newBuilder()
+                                .header(
+                                    "User-Agent",
+                                    "Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0"
+                                )
+                                .build()
+                        )
+                    }
+                    .build()
+            }
+            expectSuccess = true
         }
     }
 
     @Test
-    fun `video details extraction`() = runBlocking {
-        ytStream.extractVideoDetails(*id).collect {
-            checkVideoDetails(it)
-        }
+    fun `video data`() = runBlocking {
+        checkDataLost(((Json.decodeValue(ktor.get<String>("${baseUrl}/api/v1/videodata?id=${id.joinToString("+")}")) as JsonArray).toList() as List<*>).size)
     }
 
     @Test
-    fun `video data extraction rx`() {
-        ytStream.extractVideoDataObservable(*id).blockingSubscribe {
-            checkVideoData(it)
-        }
+    fun `video details`() = runBlocking {
+        checkDataLost(((Json.decodeValue(ktor.get<String>("${baseUrl}/api/v1/videodetails?id=${id.joinToString("+")}")) as JsonArray).toList() as List<*>).size)
     }
 
-    @Test
-    fun `video details extraction rx`() {
-        ytStream.extractVideoDetailsObservable(*id).blockingSubscribe {
-            checkVideoDetails(it)
-        }
-    }
-
-    private fun checkVideoData(videoData: VideoData?) {
-        videoData?.run {
-            checkVideoDetails(videoDetails)
-            assertFalse("empty streams ${videoDetails.id}", streams.isEmpty())
-        } ?: assertNotNull("null videoData", videoData)
-    }
-
-    private fun checkVideoDetails(videoDetails: VideoDetails?) {
-        videoDetails?.run {
-            assertNotNull("null id", id)
-            assertNotNull("null channel $id", channel)
-            assertNotNull("null title $id", title)
-            assertNotNull("null expiresInSeconds $id", expiresInSeconds)
-        } ?: assertNotNull("null videoDetails", videoDetails)
+    private fun checkDataLost(size: Int) {
+        assertTrue("data lost: ${id.size - size}", id.size == size)
     }
 }

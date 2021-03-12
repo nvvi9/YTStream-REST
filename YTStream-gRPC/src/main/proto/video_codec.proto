@@ -1,0 +1,12 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "com.nvvi9";
+package com.nvvi9;
+
+enum VideoCodec{
+  H263 = 0;
+  H264 = 1;
+  MPEG4 = 2;
+  VP8 = 3;
+  VP9 = 4;
+}

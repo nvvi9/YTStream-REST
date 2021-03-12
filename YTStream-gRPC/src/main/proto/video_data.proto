@@ -1,0 +1,11 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "com.nvvi9";
+import "video_details.proto";
+import "stream.proto";
+package com.nvvi9;
+
+message VideoData{
+  VideoDetails video_details = 1;
+  repeated Stream streams = 2;
+}
